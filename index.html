@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <title>Mood board</title>
+  </head>
+  <body>
+    <div class="app">
+      <!-- Page Header -->
+      <header>
+        <h1>🌿 Daily Reflection</h1>
+        <div class="toggle" id="toggle">🌙</div>
+      </header>
+
+      <!-- Card with moods and textarea -->
+      <div class="card">
+        <h2>How are you feeling today?</h2>
+        <input type="text" placeholder="Today's reflection title…" />
+
+        <div class="moods">
+          <button class="mood">😊</button>
+          <button class="mood">😌</button>
+          <button class="mood">😣</button>
+          <button class="mood">😴</button>
+          <button class="mood">🤩</button>
+        </div>
+
+        <textarea placeholder="Write freely. No pressure. No judgment."></textarea>
+        <button type="button" class="save">Save Entry</button>
+      </div>
+
+      <!-- Card to display insights -->
+      <div class="card">
+        <h2>📊 Your Insights</h2>
+        <div class="stats">
+          <div class="stat">
+            <strong id="entryCount">0</strong>
+            Entries
+          </div>
+          <div class="stat">
+            <strong id="topMood">—</strong>
+            Top Mood
+          </div>
+          <div class="stat">
+            <strong id="streak">0</strong>
+            Day Streak
+          </div>
+        </div>
+      </div>
+
+      <!-- Mood history display -->
+      <div class="card" id="moodSection"></div>
+
+      <!-- Entry Modal -->
+      <div class="modal hidden" id="entryModal">
+        <div class="modal-content">
+          <button class="close-btn" id="closeModal">✕</button>
+
+          <h3 id="modalTitle"></h3>
+          <p class="modal-date" id="modalDate"></p>
+          <div class="modal-mood" id="modalMood"></div>
+          <p class="modal-text" id="modalText"></p>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
