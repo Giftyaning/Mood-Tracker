@@ -1,42 +1,431 @@
+* {
+  box-sizing: border-box;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+:root {
+  --bg: #f7f8fa;
+  --card: #ffffff;
+  --text: #2e2e2e;
+  --muted: #7a7a7a;
+  --primary: #8b9df0;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+  --radius: 18px;
+}
+
+body.dark {
+  --bg: #121212;
+  --card: #1e1e1e;
+  --text: #eaeaea;
+  --muted: #a0a0a0;
+  --primary: #9faeff;
+  --shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+}
+
+html,
+body,
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
+  width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.app {
+  max-width: 900px;
+  margin: auto;
+  padding: 24px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+header h1 {
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.toggle {
+  cursor: pointer;
+  font-size: 1.2rem;
 }
 
 .card {
-  padding: 2em;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 20px;
+  margin-bottom: 20px;
 }
 
-.read-the-docs {
-  color: #888;
+.card h2 {
+  margin-top: 0;
+  font-size: 1.2rem;
+}
+
+input,
+textarea {
+  background: var(--card);
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+  margin-bottom: 14px;
+  outline: none;
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--primary);
+}
+
+body.dark input,
+body.dark textarea {
+  background: #2a2a2a;
+  border-color: #333;
+  color: var(--text);
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.moods {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.mood {
+  flex: 1;
+  padding: 12px 0;
+  border-radius: 14px;
+  border: 1px solid #ddd;
+  background: transparent;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: var(--text);
+}
+
+.mood-emoji {
+  font-size: 1.7rem;
+  line-height: 1.2;
+}
+
+.mood-name {
+  font-size: 0.80rem;
+  opacity: 0.75;
+  line-height: 1.1;
+}
+
+.mood.active {
+  transform: scale(1.05);
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+  border-color: var(--primary);
+}
+
+.save {
+  width: 100%;
+  padding: 14px;
+  border-radius: 999px;
+  border: none;
+  background: var(--primary);
+  color: white;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, opacity 0.15s ease;
+}
+
+.save:hover {
+  transform: translateY(-1px);
+  opacity: 0.9;
+}
+
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 16px;
+}
+
+.stat {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+
+.stat strong {
+  display: block;
+  font-size: 1.4rem;
+  margin-bottom: 4px;
+}
+
+/* Mood history cards */
+.mood-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.mood-card {
+  background: var(--card);
+  border-radius: 16px;
+  padding: 16px 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
+}
+
+.mood-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.mood-card-emoji {
+  font-size: 2rem;
+  margin-bottom: 6px;
+}
+
+.mood-card-moodname {
+  font-size: 0.8rem;
+  opacity: 0.75;
+  margin-bottom: 8px;
+}
+
+.mood-card-title {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+.mood-card-date {
+  font-size: 0.8rem;
+  opacity: 0.6;
+  margin-top: 6px;
+}
+
+.placeholder {
+  text-align: center;
+  color: var(--muted);
+  font-size: 0.95rem;
+  opacity: 0.7;
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: var(--card);
+  color: var(--text);
+  border-radius: var(--radius);
+  padding: 24px;
+  width: 90%;
+  max-width: 520px;
+  box-shadow: var(--shadow);
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  border: none;
+  background: transparent;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: var(--muted);
+}
+
+.modal-mood {
+  font-size: 1.2rem;
+  margin: 12px 0;
+}
+
+.modal-date {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.modal-text {
+  margin-top: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.modal-actions button {
+  flex: 1;
+  padding: 12px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.modal-edit {
+  background: var(--primary);
+  color: white;
+}
+
+.modal-delete {
+  background: #f48b8b;
+  color: white;
+}
+
+/* ---------- Weekly Analytics ---------- */
+.weekly-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.week-nav {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.week-nav button {
+  border: none;
+  background: var(--bg);
+  color: var(--text);
+  padding: 10px 12px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.week-nav button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.week-range {
+  font-weight: 600;
+}
+
+.weekly-summary {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.weekly-summary .mini {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 12px;
+  text-align: center;
+}
+
+.weekly-summary .mini strong {
+  display: block;
+  font-size: 1.1rem;
+  margin-bottom: 4px;
+}
+
+.weekly-chart {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 10px;
+  align-items: end;
+}
+
+.day-col {
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 5px 8px;
+  text-align: center;
+}
+
+.day-emoji {
+  font-size: 1.2rem;
+  height: 1.2rem;
+}
+
+.bar-wrap {
+  height: 50px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 8px 0 6px;
+}
+
+.bar {
+  width: 18px;
+  border-radius: 999px;
+  background: var(--primary);
+  opacity: 0.95;
+  max-height: 3.1em;
+}
+
+.bar.empty {
+  height: 8px !important;
+  opacity: 0.2;
+}
+
+.day-label {
+  font-size: 0.75rem;
+  opacity: 0.75;
+}
+
+.weekly-insight {
+  margin-top: 14px;
+  background: var(--bg);
+  border-radius: 14px;
+  padding: 14px;
+}
+
+.weekly-insight-title {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.weekly-insight-text {
+  margin: 0;
+  line-height: 1.5;
+  color: var(--text);
+}
+
+
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.3rem;
+  }
 }
