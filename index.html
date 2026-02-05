@@ -4,34 +4,54 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="style.css" />
-    <title>Mood board</title>
+    <title>Daily Reflection</title>
   </head>
   <body>
     <div class="app">
-      <!-- Page Header -->
       <header>
         <h1>🌿 Daily Reflection</h1>
-        <div class="toggle" id="toggle">🌙</div>
+        <div class="toggle" id="toggle" aria-label="Toggle dark mode">🌙</div>
       </header>
 
-      <!-- Card with moods and textarea -->
+      <!-- New Entry -->
       <div class="card">
         <h2>How are you feeling today?</h2>
-        <input type="text" placeholder="Today's reflection title…" />
 
-        <div class="moods">
-          <button class="mood">😊</button>
-          <button class="mood">😌</button>
-          <button class="mood">😣</button>
-          <button class="mood">😴</button>
-          <button class="mood">🤩</button>
+        <input id="titleInput" type="text" placeholder="Today's reflection title…" />
+
+        <div class="moods" aria-label="Mood selector">
+          <button class="mood" type="button" data-emoji="😊" data-name="Happy">
+            <span class="mood-emoji">😊</span>
+            <span class="mood-name">Happy</span>
+          </button>
+
+          <button class="mood" type="button" data-emoji="😌" data-name="Calm">
+            <span class="mood-emoji">😌</span>
+            <span class="mood-name">Calm</span>
+          </button>
+
+          <button class="mood" type="button" data-emoji="😣" data-name="Stressed">
+            <span class="mood-emoji">😣</span>
+            <span class="mood-name">Stressed</span>
+          </button>
+
+          <button class="mood" type="button" data-emoji="😴" data-name="Tired">
+            <span class="mood-emoji">😴</span>
+            <span class="mood-name">Tired</span>
+          </button>
+
+          <button class="mood" type="button" data-emoji="🤩" data-name="Excited">
+            <span class="mood-emoji">🤩</span>
+            <span class="mood-name">Excited</span>
+          </button>
         </div>
 
-        <textarea placeholder="Write freely. No pressure. No judgment."></textarea>
-        <button type="button" class="save">Save Entry</button>
+        <textarea id="textInput" placeholder="Write what you feel today. No pressure. No judgment."></textarea>
+
+        <button type="button" class="save" id="saveBtn">Save Entry</button>
       </div>
 
-      <!-- Card to display insights -->
+      <!-- Insights -->
       <div class="card">
         <h2>📊 Your Insights</h2>
         <div class="stats">
@@ -50,18 +70,26 @@
         </div>
       </div>
 
-      <!-- Mood history display -->
+      <!-- Weekly Analytics -->
+      <div class="card" id="weeklyAnalytics"></div>
+
+      <!-- Mood History -->
       <div class="card" id="moodSection"></div>
 
       <!-- Entry Modal -->
-      <div class="modal hidden" id="entryModal">
+      <div class="modal hidden" id="entryModal" role="dialog" aria-modal="true">
         <div class="modal-content">
-          <button class="close-btn" id="closeModal">✕</button>
+          <button class="close-btn" id="closeModal" aria-label="Close modal">✕</button>
 
           <h3 id="modalTitle"></h3>
           <p class="modal-date" id="modalDate"></p>
           <div class="modal-mood" id="modalMood"></div>
           <p class="modal-text" id="modalText"></p>
+
+          <div class="modal-actions">
+            <button type="button" class="modal-edit" id="modalEditBtn">Edit</button>
+            <button type="button" class="modal-delete" id="modalDeleteBtn">Delete</button>
+          </div>
         </div>
       </div>
     </div>
