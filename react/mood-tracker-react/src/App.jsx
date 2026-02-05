@@ -10,6 +10,16 @@ const MOODS = [
 ];
 
 const STORAGE_KEY = "moodtracker.entries.v1";
+const THEME_KEY = "moodtracker.theme.v1";
+
+// Scoring for “Avg” + “Trend”
+const MOOD_SCORE = {
+  Happy: 4,
+  Calm: 4,
+  Excited: 5,
+  Tired: 2,
+  Stressed: 1,
+};
 
 function formatDate(iso) {
   const d = new Date(iso);
@@ -19,6 +29,42 @@ function formatDate(iso) {
     month: "short",
     year: "numeric",
   });
+}
+
+function toDayKey(date) {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, "0");
+  const d = String(date.getDate()).padStart(2, "0");
+  return `${y}-${m}-${d}`;
+}
+
+function addDays(date, delta) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + delta);
+  return d;
+}
+
+function startOfWeekMonday(date) {
+  const d = new Date(date);
+  const day = d.getDay(); 
+  const diffToMonday = (day + 6) % 7; 
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - diffToMonday);
+  return d;
+}
+
+function endOfWeekSunday(monday) {
+  return addDays(monday, 6);
+}
+
+function formatWeekRange(monday, sunday) {
+  const fmt = (d) =>
+    d.toLocaleDateString(undefined, {
+      weekday: "short",
+      day: "numeric",
+      month: "short",
+    });
+  return `${fmt(monday)} – ${fmt(sunday)}`;
 }
 
 export default function App() {
@@ -36,30 +82,74 @@ export default function App() {
   });
 
   const [activeEntry, setActiveEntry] = useState(null);
-
-  // Edit mode state
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editText, setEditText] = useState("");
 
+  // Dark mode state
+  const [isDark, setIsDark] = useState(() => {
+    const raw = localStorage.getItem(THEME_KEY);
+    return raw === "dark";
+  });
+
+  // Weekly navigation
+  const [weekOffset, setWeekOffset] = useState(0);
+
+  // Persist entries
   useEffect(() => {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }, [entries]);
 
+  // Theme application to body
+  useEffect(() => {
+    document.body.classList.toggle("dark", isDark);
+    localStorage.setItem(THEME_KEY, isDark ? "dark" : "light");
+  }, [isDark]);
+
   const entryCount = entries.length;
 
   const topMood = useMemo(() => {
-    if (entries.length === 0) return "—";
-    const counts = new Map();
+    if (entries.length === 0) return null;
+
+    const counts = new Map(); 
     for (const e of entries) {
-      const key = e.mood?.name ?? "Unknown";
-      counts.set(key, (counts.get(key) ?? 0) + 1);
+      const mood = e.mood;
+      const name = mood?.name;
+      if (!name) continue;
+
+      const prev = counts.get(name);
+      counts.set(name, {
+        count: (prev?.count ?? 0) + 1,
+        mood: prev?.mood ?? mood,
+      });
     }
-    let best = { name: "—", n: 0 };
-    for (const [name, n] of counts.entries()) {
-      if (n > best.n) best = { name, n };
+
+    let best = null;
+    for (const v of counts.values()) {
+      if (!best || v.count > best.count) best = v;
     }
-    return best.name === "Unknown" ? "—" : best.name;
+    return best?.mood ?? null;
+  }, [entries]);
+
+  const dayStreak = useMemo(() => {
+    if (entries.length === 0) return 0;
+
+    const days = new Set(
+      entries
+        .map((e) => new Date(e.createdAt))
+        .filter((d) => !Number.isNaN(d.getTime()))
+        .map(toDayKey)
+    );
+
+    const today = new Date();
+    let cursor = days.has(toDayKey(today)) ? today : addDays(today, -1);
+
+    let streak = 0;
+    while (days.has(toDayKey(cursor))) {
+      streak += 1;
+      cursor = addDays(cursor, -1);
+    }
+    return streak;
   }, [entries]);
 
   function canSave() {
@@ -81,7 +171,6 @@ export default function App() {
     };
 
     setEntries((prev) => [newEntry, ...prev]);
-
     setTitle("");
     setText("");
     setSelectedMood(null);
@@ -89,7 +178,6 @@ export default function App() {
 
   function openEntry(entry) {
     setActiveEntry(entry);
-    // Reset edit mode when opening
     setIsEditing(false);
     setEditTitle("");
     setEditText("");
@@ -97,7 +185,6 @@ export default function App() {
 
   function closeEntry() {
     setActiveEntry(null);
-    // Reset edit mode when closing
     setIsEditing(false);
     setEditTitle("");
     setEditText("");
@@ -108,7 +195,6 @@ export default function App() {
     closeEntry();
   }
 
-  // Start editing 
   function startEdit() {
     if (!activeEntry) return;
     setIsEditing(true);
@@ -116,14 +202,12 @@ export default function App() {
     setEditText(activeEntry.text ?? "");
   }
 
-  // Cancel editing
   function cancelEdit() {
     setIsEditing(false);
     setEditTitle("");
     setEditText("");
   }
 
-  // Save edited entry
   function saveEdit() {
     if (!activeEntry) return;
 
@@ -136,21 +220,167 @@ export default function App() {
       )
     );
 
-    // Keep modal open but show updated view mode
     setActiveEntry((prev) =>
       prev ? { ...prev, title: nextTitle, text: nextText } : prev
     );
-
     setIsEditing(false);
   }
+
+  // Weekly Mood 
+  const weekly = useMemo(() => {
+    const today = new Date();
+    const weekStart = startOfWeekMonday(addDays(today, -7 * weekOffset));
+    const weekEnd = endOfWeekSunday(weekStart);
+
+    const dayLabels = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+
+    const byDay = Array.from({ length: 7 }, (_, i) => {
+      const d = addDays(weekStart, i);
+      const key = toDayKey(d);
+
+      const dayEntries = entries.filter((e) => {
+        const dt = new Date(e.createdAt);
+        return !Number.isNaN(dt.getTime()) && toDayKey(dt) === key;
+      });
+
+      const count = dayEntries.length;
+
+      let top = null;
+      if (count > 0) {
+        const map = new Map(); 
+        for (const e of dayEntries) {
+          const mood = e.mood;
+          const name = mood?.name;
+          if (!name) continue;
+          const prev = map.get(name);
+          map.set(name, {
+            count: (prev?.count ?? 0) + 1,
+            mood: prev?.mood ?? mood,
+          });
+        }
+        let best = null;
+        for (const v of map.values())
+          if (!best || v.count > best.count) best = v;
+        top = best?.mood ?? null;
+      }
+
+      // Average score for the day
+      const scores = dayEntries
+        .map((e) => MOOD_SCORE[e.mood?.name] ?? null)
+        .filter((v) => typeof v === "number");
+
+      const avgScore = scores.length
+        ? scores.reduce((a, b) => a + b, 0) / scores.length
+        : null;
+
+      return {
+        key,
+        label: dayLabels[i],
+        date: d,
+        count,
+        topMood: top,
+        avgScore,
+      };
+    });
+
+    const daysWithEntries = byDay.filter((d) => d.count > 0).length;
+
+    const weekScores = byDay
+      .map((d) => d.avgScore)
+      .filter((v) => typeof v === "number");
+
+    const avg =
+      weekScores.length > 0
+        ? weekScores.reduce((a, b) => a + b, 0) / weekScores.length
+        : null;
+
+    // Weekly top mood
+    let weekTopMood = null;
+    if (entries.length > 0) {
+      const weekEntries = entries.filter((e) => {
+        const dt = new Date(e.createdAt);
+        if (Number.isNaN(dt.getTime())) return false;
+        return dt >= weekStart && dt <= addDays(weekEnd, 1);
+      });
+
+      const map = new Map();
+      for (const e of weekEntries) {
+        const mood = e.mood;
+        const name = mood?.name;
+        if (!name) continue;
+        const prev = map.get(name);
+        map.set(name, {
+          count: (prev?.count ?? 0) + 1,
+          mood: prev?.mood ?? mood,
+        });
+      }
+      let best = null;
+      for (const v of map.values()) if (!best || v.count > best.count) best = v;
+      weekTopMood = best?.mood ?? null;
+    }
+
+    // Low days
+    const lowDays = byDay.filter(
+      (d) => typeof d.avgScore === "number" && d.avgScore <= 2
+    ).length;
+
+    return {
+      weekStart,
+      weekEnd,
+      rangeLabel: formatWeekRange(weekStart, weekEnd),
+      byDay,
+      daysWithEntries,
+      avg,
+      weekTopMood,
+      lowDays,
+    };
+  }, [entries, weekOffset]);
+
+  // Trend 
+  const trend = useMemo(() => {
+    // previous week
+    const today = new Date();
+    const prevStart = startOfWeekMonday(addDays(today, -7 * (weekOffset + 1)));
+    const prevEnd = endOfWeekSunday(prevStart);
+
+    const prevScores = entries
+      .filter((e) => {
+        const dt = new Date(e.createdAt);
+        if (Number.isNaN(dt.getTime())) return false;
+        return dt >= prevStart && dt <= addDays(prevEnd, 1);
+      })
+      .map((e) => MOOD_SCORE[e.mood?.name] ?? null)
+      .filter((v) => typeof v === "number");
+
+    const prevAvg = prevScores.length
+      ? prevScores.reduce((a, b) => a + b, 0) / prevScores.length
+      : null;
+
+    if (typeof weekly.avg !== "number" || typeof prevAvg !== "number") {
+      return { delta: null, direction: "none" };
+    }
+
+    const delta = weekly.avg - prevAvg;
+    const direction = delta > 0.05 ? "up" : delta < -0.05 ? "down" : "flat";
+
+    return { delta, direction };
+  }, [entries, weekOffset, weekly.avg]);
 
   return (
     <main className="app">
       <header>
         <h1>🌿 Daily Reflection</h1>
-        <div className="toggle" id="toggle" aria-label="Toggle dark mode">
-          🌙
-        </div>
+
+        {/* Toggle */}
+        <button
+          type="button"
+          className="toggle"
+          aria-label="Toggle dark mode"
+          onClick={() => setIsDark((v) => !v)}
+          style={{ background: "transparent", border: "none" }}
+        >
+          {isDark ? "☀️" : "🌙"}
+        </button>
       </header>
 
       {/* New Entry */}
@@ -158,7 +388,6 @@ export default function App() {
         <h2>How are you feeling today?</h2>
 
         <input
-          id="titleInput"
           type="text"
           placeholder="Today's reflection title…"
           value={title}
@@ -184,7 +413,6 @@ export default function App() {
         </div>
 
         <textarea
-          id="textInput"
           placeholder="Write what you feel today. No pressure. No judgment."
           value={text}
           onChange={(e) => setText(e.target.value)}
@@ -193,7 +421,6 @@ export default function App() {
         <button
           type="button"
           className="save"
-          id="saveBtn"
           onClick={handleSave}
           disabled={!canSave()}
           style={{
@@ -213,22 +440,118 @@ export default function App() {
             <strong>{entryCount}</strong>
             Entries
           </div>
+
           <div className="stat">
-            <strong>{topMood}</strong>
+            <strong>{topMood ? topMood.emoji : "—"}</strong>
             Top Mood
           </div>
+
           <div className="stat">
-            <strong>-</strong>
+            <strong>{dayStreak}</strong>
             Day Streak
           </div>
         </div>
       </div>
 
-      {/* Weekly Analytics */}
-      <div className="card" id="weeklyAnalytics"></div>
+      {/* Full Weekly Mood */}
+      <div className="card" id="weeklyAnalytics">
+        <div className="weekly-header">
+          <h2>📅 Weekly Mood</h2>
+
+          <div className="week-nav">
+            <button
+              type="button"
+              onClick={() => setWeekOffset((v) => v + 1)}
+              aria-label="Previous week"
+            >
+              ←
+            </button>
+
+            <div className="week-range">{weekly.rangeLabel}</div>
+
+            <button
+              type="button"
+              onClick={() => setWeekOffset((v) => Math.max(0, v - 1))}
+              aria-label="Next week"
+              disabled={weekOffset === 0}
+            >
+              →
+            </button>
+          </div>
+        </div>
+
+        <div className="weekly-summary">
+          <div className="mini">
+            <strong>
+              {typeof weekly.avg === "number"
+                ? `${weekly.avg.toFixed(1)}/5`
+                : "—"}
+            </strong>
+            Avg
+          </div>
+
+          <div className="mini">
+            <strong>
+              {weekly.weekTopMood ? weekly.weekTopMood.emoji : "—"}
+            </strong>
+            Top mood
+          </div>
+
+          <div className="mini">
+            <strong>{weekly.lowDays}</strong>
+            Low days
+          </div>
+
+          <div className="mini">
+            <strong>
+              {trend.delta === null
+                ? "—"
+                : `${
+                    trend.direction === "up"
+                      ? "↑"
+                      : trend.direction === "down"
+                      ? "↓"
+                      : "→"
+                  } ${trend.delta > 0 ? "+" : ""}${trend.delta.toFixed(1)}`}
+            </strong>
+            Trend
+          </div>
+        </div>
+
+        <div className="weekly-chart">
+          {weekly.byDay.map((d) => (
+            <div key={d.key} className="day-col">
+              <div className="day-emoji">
+                {d.topMood ? d.topMood.emoji : "—"}
+              </div>
+
+              <div className="bar-wrap">
+                <div
+                  className={`bar ${d.count === 0 ? "empty" : ""}`}
+                  style={{ height: `${Math.max(8, d.count * 12)}px` }}
+                ></div>
+              </div>
+
+              <div className="day-label">{d.label}</div>
+            </div>
+          ))}
+        </div>
+
+        {weekly.daysWithEntries < 2 && (
+          <div className="weekly-insight">
+            <div className="weekly-insight-title">A little more data 💡</div>
+            <p className="weekly-insight-text">
+              Log at least 2 days this week to unlock meaningful weekly
+              insights.
+            </p>
+          </div>
+        )}
+      </div>
 
       {/* Mood History */}
       <div className="card" id="moodSection">
+        <h2>🧠 Mood History</h2>
+
         {entries.length === 0 ? (
           <p className="placeholder">
             No entries yet. Save your first reflection ✨
@@ -256,7 +579,7 @@ export default function App() {
         )}
       </div>
 
-      {/* Entry Modal */}
+      {/* Modal */}
       {activeEntry && (
         <div
           className="modal"
