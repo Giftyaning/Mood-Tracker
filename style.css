@@ -110,14 +110,14 @@ textarea {
 }
 
 .mood-emoji {
-  font-size: 1.5rem;
-  line-height: 1;
+  font-size: 1.7rem;
+  line-height: 1.2;
 }
 
 .mood-name {
-  font-size: 0.75rem;
+  font-size: 0.80rem;
   opacity: 0.75;
-  line-height: 1;
+  line-height: 1.1;
 }
 
 .mood.active {
@@ -355,7 +355,7 @@ textarea {
 .day-col {
   background: var(--bg);
   border-radius: 14px;
-  padding: 10px 8px;
+  padding: 5px 8px;
   text-align: center;
 }
 
@@ -365,7 +365,7 @@ textarea {
 }
 
 .bar-wrap {
-  height: 72px;
+  height: 50px;
   display: flex;
   align-items: flex-end;
   justify-content: center;
@@ -377,6 +377,7 @@ textarea {
   border-radius: 999px;
   background: var(--primary);
   opacity: 0.95;
+  max-height: 3.1em;
 }
 
 .bar.empty {
