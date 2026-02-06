@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 import App from "../App";
 
 beforeEach(() => {
-  // Ensure tests start clean (no persisted entries)
+  // Ensure tests start clean
   localStorage.clear();
 });
 

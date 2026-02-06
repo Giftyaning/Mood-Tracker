@@ -1,79 +1,103 @@
-# 🌿 Daily Reflection — Mood & Weekly Analytics Web App
+# 🌿 Mood Tracker — Mood & Weekly Analytics Web App (React + AWS Deployment)
 
-A clean, thoughtful web app for tracking daily reflections, visualising mood patterns, and gaining gentle, data-driven insights over time.
+A thoughtfully designed React-based mood journaling web app that helps users reflect daily, visualise their mood patterns, and gain gentle, data-driven insights over time. Demonstrating a clean front-end development, client-side data handling, UX thinking, and a practical introduction to cloud deployment with AWS.
 
-This project is designed to feel simple and human-first while still demonstrating solid front-end engineering, data modelling, and UX thinking.
+A live version of this app is hosted on AWS Amplify.
 
-## ✨ Features
+
+## 🌍 Live Demo
+
+🔗 Live app:(https://main.d19glismie7h9p.amplifyapp.com/)
+🔗 GitHub repo: (https://github.com/Giftyaning/Mood-Tracker)
+
+
+## ✨ Key Features
 
 ### 📝 **Daily Reflections**
 
-* Add a reflection with:
+Users can:
 
-  * Title
-  * Mood (emoji + label)
-  * Free-text journal entry
-* Entries are stored **locally in the browser using `localStorage`**.
+Add a reflection with:
+
+  Title
+
+  Mood (emoji + label)
+
+  Free-text journal entry
+
+All data is stored in localStorage, keeping the app fully client-side with no backend.
+
 
 ### 🌙 **Dark Mode**
 
 * Toggle between light and dark themes.
-* All components inherit theme styles consistently.
+* Consistent theming using CSS variables
 
 ### 🧠 **Mood History**
 
 * Displays your **7 most recent entries** in a clean card grid.
 * Clicking a card opens a detailed modal view.
 
-### 🔍 **View, Edit & Delete (via Modal)**
 
-* Click any entry card to open a modal showing:
+### 🔍 **View, Edit & Delete Entries**
 
-  * Title
-  * Date
-  * Mood (emoji + name)
-  * Full reflection text
-* From the modal you can:
+From the modal, users can:
 
-  * **Edit** → loads the entry back into the form for updating
-  * **Delete** → removes the entry from storage
+  View full reflection
+
+  Edit an entry (pre-fills the form)
+
+  Delete an entry (updates UI and storage)
+
 
 ### 📊 **Insights Dashboard**
 
-Shows high-level stats across all your entries:
+Shows:
 
-* Total number of entries
-* Most common mood (emoji)
-* Current day streak
+  Total number of entries
+
+  Most common mood (emoji)
+
+  Current day streak
+
 
 ### 📅 **Weekly Mood Analytics (Key Feature)**
 
-A dedicated analytics panel that helps you understand patterns over time.
+A custom-built analytics panel that includes:
 
-**Includes:**
+Monday–Sunday week navigation
 
-* **Week navigation** (Monday → Sunday)
-* **Weekly summary:**
+Weekly summary:
 
-  * Average mood score (1–5)
-  * Top mood of the week (emoji)
-  * Number of “low-mood” days
-  * Trend vs last week (↑ / ↓)
-* **7-day visual chart:**
+  Average mood score
 
-  * One column per day (Mon–Sun)
-  * Same-colour bars for clarity
-  * Emoji above each bar
-* **Gentle, adaptive insight message:**
+  Top mood of the week
 
-  * Changes based on whether the week was *Good, Mixed, or Tough*
-  * Supportive, non-judgmental, and practical
+  Number of “low-mood” days
+
+  Trend vs last week
+
+7-day visual chart with:
+
+  One column per day
+
+  Same-colour bars for a clean, calm UI
+
+  Emoji above each bar
+
+Gentle, adaptive insight message based on:
+
+  Good week
+
+  Mixed week
+
+  Tough week
 
 ---
 
-## 🧠 How the Data Works (in simple terms)
+## 🧠 How the Analytics work
 
-### Mood scoring (used for analytics)
+### Mood scoring 
 
 Each mood maps to a numeric score:
 
@@ -95,59 +119,72 @@ Each mood maps to a numeric score:
 
 ## 🛠️ Tech Stack
 
-* **HTML** — Structure
-* **CSS** — Modern, minimal UI with CSS variables and dark mode
-* **JavaScript (Vanilla)** —
+### Frontend
 
-  * State management
-  * localStorage persistence
-  * Weekly analytics calculations
-  * DOM rendering
-  * Modal interactions
-* **No backend / no frameworks**
+  React (Vite)
+
+  JavaScript (ES6+)
+
+  HTML5
+
+  Modern CSS (variables, flexbox, grid)
+
+### Storage
+
+  localStorage (client-side persistence)
+
+### Cloud Deployment
+
+  AWS Amplify Hosting
 
 ---
+
+## What AWS service I used
+
+  I deployed this project using AWS Amplify Hosting, which:
+
+  Builds the React app directly from GitHub
+
+  Automatically serves it over HTTPS
+
+  Provides a globally accessible cloud URL
+
+  Supports continuous deployment (new builds on every Git push)
+
+## Why cloud deployment matters
+
+  Makes applications accessible from anywhere in the world
+
+  Removes the need for users to install anything locally
+
+  Provides reliable hosting instead of relying on a local machine
+
+  Enables scalability and professional infrastructure management
+
+  Mirrors real-world industry workflows for modern web applications
+
+AWS Amplify simplified this process by automating the build pipeline and hosting, allowing me to focus on building a high-quality front-end application while still gaining practical cloud experience.
 
 ## 📁 Project Structure
 
 ```
-daily-reflection/
-│── index.html
-│── style.css
-│── script.js
-│── assets/
-│   └── icons/
+mood-tracker/
+│── react/
+│   └── mood-tracker-react/
+│       ├── src/
+│       ├── public/
+│       ├── package.json
+│       ├── vite.config.js
+│       └── 
 ```
-
 ---
 
 ## 🚀 How to Run Locally
 
-1. Clone the repository:
-
-```bash
-git clone https://github.com/your-username/daily-reflection.git
-```
-
-2. Open the project folder:
-
-```bash
-cd daily-reflection
-```
-
-3. Open `index.html` in your browser **or** use a local server (recommended):
-
-With VS Code Live Server:
-
-* Right click `index.html` → Open with Live Server
-
-Or using Python:
-
-```bash
-python -m http.server
-```
-
-Then visit: `http://localhost:8000`
+## Clone the repo git clone https://github.com/your-username/mood-tracker.git 
+## Navigate to React app cd mood-tracker/react/mood-tracker-react 
+## Install dependencies npm install 
+## Run in development mode npm run dev # Build for production npm run build
 
 ---
 
@@ -155,51 +192,17 @@ Then visit: `http://localhost:8000`
 
 Try the following to see the full experience:
 
-1. Add entries across different days
-2. Switch between light and dark mode
-3. Click a mood history card → open modal
-4. Edit an entry → see it update instantly
-5. Delete an entry → watch insights update
-6. Navigate weekly analytics (← / →)
-7. Observe how trend and suggestions change
+  Add entries across different days
+
+  Switch light/dark mode
+
+  Open, edit, and delete entries
+
+  Navigate weekly analytics (← / →)
+
+  Observe how trend and suggestions change
 
 ---
+## 💬 Contact / Feedback
 
-## 🎯 Why This Is a Strong Portfolio Project
-
-This project demonstrates:
-
-* Clean front-end engineering
-* Thoughtful UI/UX design
-* Real data persistence (localStorage)
-* Non-trivial data transformations (daily → weekly aggregation)
-* Time-based reasoning (weeks, streaks, trends)
-* Human-centred, responsible design for wellbeing tools
-
----
-
-## 🌱 Future Improvements (Optional)
-
-Some ideas if you want to extend this further:
-
-* Word cloud from reflections
-* Export entries as CSV
-* Search or filter past entries
-* Mobile-first responsive tweaks
-* Tags for reflections
-* Calendar view
-* Cloud sync option
-
----
-
-## 💬 Feedback & Contributions
-
-Feel free to open an issue or submit a pull request if you have ideas or improvements.
-
-If you’d like, I can also provide:
-
-* A LinkedIn post to showcase this project
-* A GitHub Issues template
-* Or a demo video script
-
-Happy coding 🌿
+If you have suggestions or would like to collaborate, feel free to open an issue or reach out.
