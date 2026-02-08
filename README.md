@@ -181,7 +181,7 @@ mood-tracker/
 
 ## 🚀 How to Run Locally
 
-## Clone the repo git clone https://github.com/your-username/mood-tracker.git 
+## Clone the repo git clone https://github.com/giftyaning/mood-tracker.git 
 ## Navigate to React app cd mood-tracker/react/mood-tracker-react 
 ## Install dependencies npm install 
 ## Run in development mode npm run dev # Build for production npm run build
