@@ -1,8 +1,8 @@
 # 🌿 Mood Tracker — Mood & Weekly Analytics Web App (React + AWS Deployment)
 
-A thoughtfully designed React-based mood journaling web app that helps users reflect daily, visualise their mood patterns, and gain gentle, data-driven insights over time. Demonstrating a clean front-end development, client-side data handling, UX thinking, and a practical introduction to cloud deployment with AWS.
+A thoughtfully designed React mood tracking web app that helps users reflect daily, visualise emotional patterns, and gain gentle, data-driven insights over time. This project demonstrates a clean front-end development, UX thinking, user data handling, cloud deployment with AWS Amplify, and a full automated testing and CI pipeline using GitHub Actions.
 
-A live version of this app is hosted on AWS Amplify.
+A live version of the app is deployed on AWS Amplify.
 
 
 ## 🌍 Live Demo
@@ -19,23 +19,23 @@ Users can:
 
 Add a reflection with:
 
-  Title
+  A title.
 
-  Mood (emoji + label)
+  A selected mood (emoji + label).
 
-  Free-text journal entry
+  A free-text journal reflection.
 
-All data is stored in localStorage, keeping the app fully client-side with no backend.
+All data is stored in localStorage, keeping the app fully client-side.
 
 
 ### 🌙 **Dark Mode**
 
 * Toggle between light and dark themes.
-* Consistent theming using CSS variables
+* Consistent styling using CSS variables
 
 ### 🧠 **Mood History**
 
-* Displays your **7 most recent entries** in a clean card grid.
+* Displays the 7 most recent entries in a clean card layout.
 * Clicking a card opens a detailed modal view.
 
 
@@ -45,53 +45,31 @@ From the modal, users can:
 
   View full reflection
 
-  Edit an entry (pre-fills the form)
+  Edit an entry (form pre-fills)
 
   Delete an entry (updates UI and storage)
 
 
 ### 📊 **Insights Dashboard**
 
-Shows:
+Includes:
 
   Total number of entries
 
-  Most common mood (emoji)
+  Most common mood 
 
-  Current day streak
+  Current streak
 
 
 ### 📅 **Weekly Mood Analytics (Key Feature)**
 
-A custom-built analytics panel that includes:
+A custom analytics panel showing:
 
-Monday–Sunday week navigation
+Monday–Sunday navigation (average mood, top mood, low‑mood days, trend vs last week)
 
-Weekly summary:
+A 7‑day visual chart with emoji indicators
 
-  Average mood score
-
-  Top mood of the week
-
-  Number of “low-mood” days
-
-  Trend vs last week
-
-7-day visual chart with:
-
-  One column per day
-
-  Same-colour bars for a clean, calm UI
-
-  Emoji above each bar
-
-Gentle, adaptive insight message based on:
-
-  Good week
-
-  Mixed week
-
-  Tough week
+Adaptive insight messages (“good week”, “mixed week”, “tough week”)
 
 ---
 
@@ -111,9 +89,11 @@ Each mood maps to a numeric score:
 
 ### Weekly logic
 
-* The app uses **Monday as the start of the week**.
-* If you make multiple entries in one day, **only the latest one counts** for that day’s analytics.
-* Weekly stats are calculated from these daily values.
+* Weeks start on Monday
+
+* If multiple entries exist for a day, the latest one is used
+
+* Weekly stats are calculated from these daily values
 
 ---
 
@@ -136,34 +116,63 @@ Each mood maps to a numeric score:
 ### Cloud Deployment
 
   AWS Amplify Hosting
+    * Builds directly from GitHub
+    * Automatic HTTPS
+    * Global CDN
+    * Continous deployment on every push.
+
 
 ---
 
-## What AWS service I used
-
-  I deployed this project using AWS Amplify Hosting, which:
-
-  Builds the React app directly from GitHub
-
-  Automatically serves it over HTTPS
-
-  Provides a globally accessible cloud URL
-
-  Supports continuous deployment (new builds on every Git push)
-
 ## Why cloud deployment matters
 
-  Makes applications accessible from anywhere in the world
+  * Global accessibility
 
-  Removes the need for users to install anything locally
+  * Reliable hosting
 
-  Provides reliable hosting instead of relying on a local machine
+  * Automatic builds on Git pushes
 
-  Enables scalability and professional infrastructure management
+  * A workflow similar to real industry deployments
 
-  Mirrors real-world industry workflows for modern web applications
 
-AWS Amplify simplified this process by automating the build pipeline and hosting, allowing me to focus on building a high-quality front-end application while still gaining practical cloud experience.
+AWS Amplify allowed me to focus on building a high-quality front-end application while still gaining practical cloud experience.
+
+## 🧪 Automated Testing & CI/CD (Engineering Highlight)
+
+To ensure reliability and prevent regressions, I implemented automated UI tests and a full CI pipeline.
+
+### ✔️ Testing Stack
+Vitest — test runner
+
+React Testing Library — user‑interaction testing
+
+jsdom — browser simulation
+
+jest‑dom — readable assertions
+
+user‑event — simulates real clicks/typing
+
+### ✔️ GitHub Actions CI Pipeline
+On every push or pull request:
+
+Install Node
+
+Install dependencies
+
+Run tests
+
+Fail the build if any test fails
+
+This ensures:
+
+No broken code is merged
+
+UI behaviour stays consistent
+
+The codebase remains stable over time
+
+I also intentionally broke a test to confirm CI catches failures — and it did.
+
 
 ## 📁 Project Structure
 
